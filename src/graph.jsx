@@ -1,26 +1,60 @@
 //import React from 'react'
-//import ReactDOM from 'react-dom'
 //import classNames from 'classnames'
+import React, { Component, createRef } from "react";
+import ReactDOM from 'react-dom'
+import SideBar from "./sidebar";
+//import "./styles.css";
+ 
+const nodes = new vis.DataSet([
+  { id: 1, label: 'Node 1' },
+  { id: 2, label: 'Node 2' },
+  { id: 3, label: 'Node 3' },
+  { id: 4, label: 'Node 4' },
+  { id: 5, label: 'Node 5' }
+]);
 
-'use strict';
+// create an array with edges
+const edges = new vis.DataSet([
+  { from: 1, to: 3 },
+  { from: 1, to: 2 },
+  { from: 2, to: 4 },
+  { from: 2, to: 5 }
+]);
 
-class LikeButton extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { liked: false };
+const data = {
+  nodes: nodes,
+  edges: edges
+};
+const options = {};
+
+// initialize your network!
+
+class VisNetwork extends Component {
+
+  constructor() {
+    super();
+    this.network = {};
+    this.appRef = createRef();
+  }
+
+  componentDidMount() {
+    this.network = new vis.Network(this.appRef.current, data, options);
   }
 
   render() {
-    if (this.state.liked) {
-      return 'You liked this.';
-    }
-
     return (
-      <button onClick={() => this.setState({ liked: true }) }>
-        Like
-      </button>
+      <div style = {{height:"100vh"}} ref={this.appRef} />
     );
   }
 }
 
-ReactDOM.render(<LikeButton />, document.querySelector('#container'));
+function App() {
+  return (
+    <div id="App">
+      <SideBar/>
+      <VisNetwork/>
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.querySelector('#container'))

@@ -10,7 +10,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(js|jsx)$/,
+                test: /\.(js|jsx|css)$/,
                 exclude: /node_modules/,
                 use: {
                     loader: "babel-loader",
@@ -21,8 +21,18 @@ module.exports = {
                             ["@babel/plugin-transform-runtime",
                                 { "regenerator": true }]
                         ]
+                    } 
+                }
+            },
+            {
+                test: /\.css$/i,
+                use: [
+                  { loader: 'css-loader',
+                    options: {
+                        modules: true
                     }
                 }
+                ]        
             }
         ]
     }
