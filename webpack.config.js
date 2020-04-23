@@ -2,9 +2,9 @@ var path = require('path');
 
 module.exports = {
     mode: 'production',
-    entry: path.resolve(__dirname, 'src', 'graph.jsx'),
+    entry: path.resolve(__dirname, 'src', 'main.jsx'),
     output: {
-        filename: 'graph.js',
+        filename: 'main.bundle.js',
         path: path.resolve(__dirname, 'static')
     },
     module: {
@@ -35,5 +35,8 @@ module.exports = {
                 ]        
             }
         ]
-    }
+    },
+    resolve: {
+        extensions: ['.js', '.jsx']
+    }   
 }

@@ -6,15 +6,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
         <link rel="stylesheet" type="text/css" href="static/styles.css">
+        <script type="text/javascript" src="static/network.js"></script>
     </head>
               
     </head>
-    <body style="margin: 0">
+    <body style="margin: 0" onload="draw();">
         <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
         <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-        <div id="container"></div>
+        <div style = "height:100vh;"  id="container">
+        </div>
         <!--<script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
         <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>-->
-        <script src="static/graph.js"></script>
+        <script type="module" src="static/main.bundle.js"></script>
     </body>
 </html>

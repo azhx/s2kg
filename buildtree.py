@@ -86,4 +86,18 @@ def find_qualified_children(access, depth=0, parent =-1):
     if len(q) == 0:
         return
 
+def get_data(accessor):
+    find_qualified_children(accessor)
+    graph = {'nodes':[], 'edges':[]}
+    for i, v in enumerate(refdict['title']):
+        graph['nodes'].append({
+            'id':i,
+            'label':v,
+            'title':refdict['influentialCitationCount'][i]
+        })
+        graph['edges'].append({
+            'from':refdict['parent'][i],
+            'to':i
+        })
+    return graph
 #find_qualified_children("arXiv:1703.06870")
