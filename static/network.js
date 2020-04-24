@@ -28,25 +28,34 @@ function draw() {
     };
     var options = {
         layout: {
-            hierarchical: false
+          hierarchical: false
         },
         edges: {
-            color: "#000000",
-            arrows:{
-            to:{
-                enabled:true
-            }  
-            },
-            smooth: {
-                enabled: true,
-                type: "dynamic",
-                roundness: 0.5
+          color: "#000000",
+          arrows: {
+            to: {
+              enabled: true
             }
+          },
+          smooth: {
+            enabled: true,
+            type: "dynamic",
+            roundness: 0.5
+          }
         },
         interaction: {
-            tooltipDelay: 0
-        }    
-    };
+          tooltipDelay: 0
+        },
+        nodes: {
+          shape: 'dot'
+        },
+        physics: {
+          barnesHut: {
+            avoidOverlap: 0.5,
+            centralGravity:0.6
+          }
+        }
+      }
     network = new vis.Network(container, data, options);
 }
 

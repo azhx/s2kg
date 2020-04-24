@@ -9,16 +9,16 @@ class Sidebar extends React.Component{
     this.state = {
       nodeUpdate : [],
       edgeUpdate : [],
-      accessor: "arXiv:1703.06870"
+      accessor: "arXiv:1802.00434"
     }
   }
 
-  addnode(){
+  addnode = async () => {
     //temporarily build entire graph 
-    this.fetchGraph();
+    await this.fetchGraph();
     nodes.clear()
-    nodes.update(this.state.nodeUpdate);
     edges.clear()
+    nodes.update(this.state.nodeUpdate);
     edges.update(this.state.edgeUpdate);
   }
 
@@ -26,12 +26,14 @@ class Sidebar extends React.Component{
     let res = await fetch('/buildgraph?accessor='+ this.state.accessor);
     let graph = await res.json();
     console.log(graph)
-    this.setState({
+    console.log(graph.nodes)
+    this.setState(prevState => ({
       nodeUpdate: graph.nodes,
-      edgeUpdate: graph.edges
-    });
+      edgeUpdate: graph.edges,
+      ...prevState.jasper    
+      }));
   }
-
+  
 
   render() {return (
         <Menu noOverlay width={500}>

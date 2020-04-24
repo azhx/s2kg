@@ -1,0 +1,106 @@
+{
+  "edges": [
+    {
+      "from": -1,
+      "to": 0,
+      "id": "d3348c70-32a5-4235-855c-5c995c745b00"
+    },
+    {
+      "from": 0,
+      "to": 1,
+      "id": "b0aedf4e-b4e7-476e-84bf-750e34a751ae"
+    },
+    {
+      "from": 0,
+      "to": 2,
+      "id": "8ae76f4f-24d0-4245-90dc-5c10a23bb664"
+    },
+    {
+      "from": 0,
+      "to": 3,
+      "id": "41744f74-8658-46ab-ad0a-8ca5296aaa7a"
+    },
+    {
+      "from": 2,
+      "to": 4,
+      "id": "63afe107-d091-4316-8c64-e6c8855f336d"
+    },
+    {
+      "from": 2,
+      "to": 5,
+      "id": "badfcc09-e728-42c0-99a7-a8e4b514a248"
+    },
+    {
+      "from": 2,
+      "to": 6,
+      "id": "9d18baf7-e83d-4413-ba40-bdb78c58d4f8"
+    },
+    {
+      "from": 3,
+      "to": 7,
+      "id": "dd951bba-c713-4aff-9e90-20d97ad032eb"
+    },
+    {
+      "from": 3,
+      "to": 8,
+      "id": "ce50c984-a915-43fc-9a66-31c008cdabef"
+    },
+    {
+      "from": 3,
+      "to": 9,
+      "id": "90a46e9c-18c1-49de-8857-6c822eee0349"
+    }
+  ],
+  "nodes": [
+    {
+      "id": 0,
+      "label": "Mask R-CNN",
+      "title": 741
+    },
+    {
+      "id": 1,
+      "label": "[Et al].",
+      "title": 2789
+    },
+    {
+      "id": 2,
+      "label": "The Cityscapes Dataset for Semantic Urban Scene Understanding",
+      "title": 689
+    },
+    {
+      "id": 3,
+      "label": "Fully Convolutional Networks for Semantic Segmentation",
+      "title": 401
+    },
+    {
+      "id": 4,
+      "label": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+      "title": 3381
+    },
+    {
+      "id": 5,
+      "label": "Fully convolutional networks for semantic segmentation",
+      "title": 1917
+    },
+    {
+      "id": 6,
+      "label": "Microsoft COCO: Common Objects in Context",
+      "title": 1591
+    },
+    {
+      "id": 7,
+      "label": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+      "title": 6661
+    },
+    {
+      "id": 8,
+      "label": "ImageNet Classification with Deep Convolutional Neural Networks",
+      "title": 5511
+    },
+    {
+      "id": 9,
+      "label": "ImageNet Classification with Deep Convolutional Neural Networks",
+      "title": 5511
+    }
+  ]
+}
