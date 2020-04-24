@@ -1,12 +1,12 @@
 import os
 import numpy as np
-import buildtree
+from buildtree import get_data
 from flask import Flask, request, render_template, jsonify
 
 app = Flask(__name__, static_folder='static')
 
 def buildgraph(accessor):
-    graph = get_date(accessor)
+    graph = get_data(accessor)
     return (jsonify(graph))
 
 @app.route('/')
@@ -16,6 +16,7 @@ def main():
 @app.route('/buildgraph', methods=['GET'])
 def getgraph():
     accessor = request.args.get('accessor')
+    print(accessor)
     return buildgraph(accessor)
 
 

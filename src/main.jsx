@@ -3,6 +3,18 @@
 import React, { Component, createRef } from "react";
 import ReactDOM from 'react-dom'
 import Sidebar from "./sidebar";
+
+function App() {
+  return (
+    <div id="App">
+      <Sidebar/>
+      {/*<VisNetwork/>*/}
+      <div id= "network" style = {{height:"100vh"}}></div>
+    </div>
+  );
+}
+
+var app = ReactDOM.render(<App/>, document.querySelector('#container'))
 //import VisNetwork from "./network";
 //import "./styles.css";
 /*
@@ -69,15 +81,3 @@ class VisNetwork extends Component {
   }
 }
 */
-
-function App() {
-  return (
-    <div id="App">
-      <Sidebar/>
-      {/*<VisNetwork/>*/}
-      <div id= "network" style = {{height:"100vh"}}></div>
-    </div>
-  );
-}
-
-ReactDOM.render(<App />, document.querySelector('#container'))
