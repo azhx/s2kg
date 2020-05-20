@@ -5,9 +5,17 @@ class Sidebar extends React.Component{
     super(props);
   }
 
-  render() {return (
+  render() {
+    let abstract = ""
+    if (typeof this.props.selectednode == 'undefined'){
+      abstract = "No paper selected"
+    } else {
+      abstract = this.props.selectednode['abstract']
+    }
+    return (
         <Menu noOverlay width={"50vw"}>
-          <p>Hello</p>
+          <h1>Abstract</h1>
+          <p>{abstract}</p>
         </Menu>
       );
     }

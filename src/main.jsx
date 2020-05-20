@@ -371,67 +371,64 @@ class App extends React.Component {
     this.state = {
       nodeUpdate : [],
       edgeUpdate : [],
-      accessor: "10.1109/CVPR.2018.00762",
+      accessor: '',//"10.1109/CVPR.2018.00762",
       breadth: 3,
-      selectednode: {}
+      selectednode: {},
+      growing: false
     };
     this.network = null;
     this.appRef = createRef();    
   }
 
-  handleChange = (e, data) => this.setState({[data.name]: data.value});
-  handleMessage = (e, data) => this.setState({[data.name]: data.value});
-
-  /*notify = () => this.toastId.current = toast('🦄 Wow so easy!', {progress: 0});
-  success = () => this.toastId.current = toast.success('Success!!', {
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined
-  })
-  dismiss = () =>  toast.dismiss(this.toastId.current);
-
-  clearall () {
-    this.nodes.clear();
-    this.edges.clear();
-  }*/
+  handleChange = (e, data) => this.setState({breadth: data.value});
+  handleMessage = (e, data) => this.setState({accessor: data.value});
 
   toggleHierarchy = () => {
     console.log(this.options)
-    let hierarchy = this.options.layout.hierarchical['enabled'];
+    /*let hierarchy = this.options.layout.hierarchical['enabled'];
     if (hierarchy == true){
       this.options.layout.hierarchical['enabled'] = false;
       this.options.physics['enabled'] = true
       this.network.setOptions(this.options)
-    }
-    else {
-      this.options.layout.hierarchical['enabled'] = true;
-      this.options.physics['enabled'] = false
-      this.network = new Network(this.appRef.current, this.data, this.options);
-      this.presets()
-    }
+    }*/
+    this.options.layout.hierarchical['enabled'] = true;
+    this.options.physics['enabled'] = false
+    this.network = new Network(this.appRef.current, this.data, this.options);
+    this.presets()
   }
-  addnode = async () => {
-    //temporarily build entire graph 
-    await this.fetchGraph();
-    if (Object.keys(this.state.nodeUpdate).length > 0){
-      this.nodes.clear()
-      this.edges.clear()  
-      this.nodes.update(this.state.nodeUpdate);
-      this.edges.update(this.state.edgeUpdate);
-    }
+
+  presets = () => {
+    this.network.on( 'click', function(properties) {
+      let ids = properties.nodes;
+      let clickedNodes = nodes.get(ids);
+      console.log('clicked nodes:', clickedNodes);
+      this.setState({selectednode: clickedNodes[0]});
+      if (clickedNodes.length == 0){
+        this.setState({growing: false})
+      } else {
+
+      }
+    }.bind(this));
+    this.options.layout.hierarchical['enabled'] = false;
+    this.options.physics['enabled'] = true
+    this.network.setOptions(this.options)
+  }
+
+  componentDidMount() {
+    this.network = new Network(this.appRef.current, this.data, this.options);
+    console.log('called')
+    this.presets();
   }
 
   fetchGraph = async () => {
-    console.log('selectnode!', this.state.selectednode, typeof this.state.selectednode)
     if (typeof this.state.selectednode !== 'undefined'){
-      console.log('shitting')
-      if (Object.keys(this.state.selectednode).length > 0 ||
-          this.state.selectednode.hasOwnProperty('url')){
+      if ((Object.keys(this.state.selectednode).length > 0 ||
+          this.state.selectednode.hasOwnProperty('url')) && 
+          (this.state.accessor == '')){
         let accessor = this.state.selectednode['url'].split('/')
         this.state.accessor = accessor[accessor.length-1]
         console.log("accessor!", this.state.accessor)
+        this.state.growing = true
       }
     }
     let toastId = toast(<div style = {{"textAlign": "center"}}><p>Looking in {this.state.accessor}...</p>
@@ -456,6 +453,10 @@ class App extends React.Component {
     })
     } else {
       console.log(graph)
+      /*
+      let updates = computeUpdates(graph)
+      this.state.nodeUpdate = updates[0]
+      this.state.edgeUpdate = updates[1]*/
       this.setState({nodeUpdate: graph.nodes})
       this.setState({edgeUpdate: graph.edges})
       toast.dismiss(toastId);
@@ -472,20 +473,30 @@ class App extends React.Component {
       })
     }    
   }
-
-  presets = () => {
-    this.network.on( 'click', function(properties) {
-      let ids = properties.nodes;
-      let clickedNodes = nodes.get(ids);
-      console.log('clicked nodes:', clickedNodes);
-      this.setState({selectednode: clickedNodes[0]});
-    }.bind(this)) ;
+/*
+  computeUpdates = (graph) => {
+    this.setState({nodeUpdate: graph.nodes})
+    this.setState({edgeUpdate: graph.edges})
+    return [nodeUpdate, edgeUpdate]
+  }
+*/
+  addnode = async () => {
+    //temporarily build entire graph 
+    await this.fetchGraph();
+    if (Object.keys(this.state.nodeUpdate).length > 0){
+      if (this.state.growing == false){
+        this.edges.clear()  
+        this.nodes.clear()
+      }
+      console.log(this.state.growing)
+      this.nodes.update(this.state.nodeUpdate);
+      this.edges.update(this.state.edgeUpdate);
+      if (this.state.growing == false){
+        this.toggleHierarchy()
+      }
+    }
   }
 
-  componentDidMount() {
-    this.network = new Network(this.appRef.current, this.data, this.options);
-    this.presets();
-  }
 
   render() {
     const wrap = (props) => {
@@ -494,6 +505,7 @@ class App extends React.Component {
         <Sidebar {...props} 
           addnode = {this.addnode} 
           toggleHierarchy = {this.toggleHierarchy}
+          selectednode = {this.state.selectednode}
         />
         <div id = "network" style = {{height:"100vh"}} ref={this.appRef}/>
         <div id = "searchbar" style = {{position: "absolute", top:"7.1vh", 
@@ -505,7 +517,7 @@ class App extends React.Component {
             selectednode = {this.state.selectednode}
           />
         </div>
-        <Button style = {{position: "absolute", right:"-1%", top:"7.1vh", transform: "translate(-50%, -50%)"}} onClick={this.toggleHierarchy}>Chaos</Button>
+        <Button style = {{position: "absolute", right:"-1%", top:"7.1vh", transform: "translate(-50%, -50%)"}} onClick={this.toggleHierarchy}>Reset</Button>
         <ToastContainer
           position="bottom-center"
           autoClose={false}

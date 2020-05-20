@@ -10,7 +10,7 @@ from collections import deque
 global q, breadth, graphdict, refdict
 
 api_base = "https://api.semanticscholar.org/v1/paper/"
-refdict = {"arxivId":[],"authors":[],"citationVelocity":[],"num_citations":[],
+refdict = {"arxivId":[],"authors":[],"citationVelocity":[],"num_citations":[], "abstract":[],
            "corpusId":[],"doi":[],"fieldsOfStudy":[], "influentialCitationCount":[],
            "is_open_access":[], "is_publisher_licensed":[],"paperId":[],"num_references":[],
            "title":[],"topics":[],"url":[],"venue":[],"year":[], "parent": [], "depth":[]}
@@ -132,7 +132,8 @@ def get_data(accessor, breadth):
             'title':graphdict['num_citations'][i],
             'size':graphdict['num_citations'][i]**.5,
             'level':graphdict['depth'][i],
-            'url':graphdict['url'][i]
+            'url':graphdict['url'][i],
+            'abstract':graphdict['abstract'][i]
         })
         if i > 0:
             graph['edges'].append({
