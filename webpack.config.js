@@ -1,8 +1,14 @@
 var path = require('path');
 
 module.exports = {
-    mode: 'production',
-    entry: path.resolve(__dirname, 'src', 'main.jsx'),
+    mode: 'development',//'production',
+    entry: {
+        main:'./src/main.jsx',
+    },
+    devtool: 'inline-source-map',
+    devServer: {
+        contentBase: './src',
+    },
     output: {
         filename: 'main.bundle.js',
         path: path.resolve(__dirname, 'static')
@@ -19,7 +25,8 @@ module.exports = {
                         plugins: [
                             "@babel/plugin-proposal-class-properties", 
                             ["@babel/plugin-transform-runtime",
-                                { "regenerator": true }]
+                                { "regenerator": true }],
+                            'emotion'
                         ]
                     } 
                 }
@@ -27,11 +34,8 @@ module.exports = {
             {
                 test: /\.css$/i,
                 use: [
-                  { loader: 'css-loader',
-                    options: {
-                        modules: true
-                    }
-                }
+                    'style-loader',
+                    'css-loader',
                 ]        
             }
         ]

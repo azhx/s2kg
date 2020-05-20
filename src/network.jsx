@@ -1,7 +1,26 @@
-//ABANDONED
+
 import React, { Component, createRef } from "react";
-import Graph from "react-graph-vis";
-class VisNetwork extends React.Component{
+  
+class VisNetwork extends Component {
+
+constructor() {
+    super();
+}
+
+componentDidMount() {
+    this.network = new Network(this.appRef.current, data, options);
+}
+
+render() {
+    return (
+    
+    );
+}
+}
+export default VisNetwork;
+
+
+/*class VisNetwork extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
@@ -56,7 +75,7 @@ class VisNetwork extends React.Component{
             edges: graph.edges, 
         });
         console.log(this.state);
-    }*/
+    }
 
     render(){
         return(
@@ -125,4 +144,3 @@ class VisNetwork extends React.Component{
         );
     }
 }*/
-export default VisNetwork;

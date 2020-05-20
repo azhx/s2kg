@@ -5,9 +5,12 @@ from flask import Flask, request, render_template, jsonify
 
 app = Flask(__name__, static_folder='static')
 
-def buildgraph(accessor):
-    graph = get_data(accessor)
-    return (jsonify(graph))
+def buildgraph(accessor, breadth):
+    try:
+        graph = get_data(accessor, breadth)
+        return (jsonify(graph))
+    except:
+        return jsonify({'error': 'Paper not found'})        
 
 @app.route('/')
 def main():
@@ -16,8 +19,11 @@ def main():
 @app.route('/buildgraph', methods=['GET'])
 def getgraph():
     accessor = request.args.get('accessor')
-    print(accessor)
-    return buildgraph(accessor)
+    breadth = int(request.args.get('breadth'))
+    print(accessor, breadth)
+    jsongraph = buildgraph(accessor, breadth)
+    print(jsongraph)
+    return jsongraph
 
 
 if __name__ == "__main__":
