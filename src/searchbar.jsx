@@ -3,18 +3,17 @@ import { Dropdown, Button, Input, Label } from "semantic-ui-react";
 
 const nums = [
   {key: "3", text: "3", value: "3"},
-  {key: "4", text: "4", value: "4"},
-  {key: "5", text: "5", value: "5"},
   {key: "6", text: "6", value: "6"},
-  {key: "7", text: "7", value: "7"},
-  {key: "8", text: "8", value: "8"},
   {key: "9", text: "9", value: "9"},
-  {key: "10", text: "10", value: "10"}
+  {key: "All", text: "All", value: "-1"}
 ]
 
 class Searchbar extends React.Component {
   constructor(props) {
     super(props);
+  }
+  componentDidMount () {
+    window.searchbar = this
   }
   
   render() {
@@ -26,6 +25,7 @@ class Searchbar extends React.Component {
     } else{
       let accessor = this.props.selectednode['url'].split('/')
       placeholder = accessor[accessor.length-1]
+      //this.props.updateAccessor(placeholder)
       console.log(placeholder)
     }
     return (
@@ -34,7 +34,8 @@ class Searchbar extends React.Component {
         name = "accessor"
         label = {<Dropdown/>}
         onChange = {this.props.handleMessage}
-        placeholder={placeholder}>
+        placeholder={placeholder}
+        value = {this.props.searchbarVal}>
       <Label>
         <Dropdown 
           name = "breadth" 

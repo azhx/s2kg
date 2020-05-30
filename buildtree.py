@@ -71,11 +71,26 @@ def resolve_accessor(res):
     else:
         return(res['doi'])
 
+def check_paper(ref, parent, depth, topnchildren, breadth):
+    icc = 0
+    child_accessor = resolve_accessor(ref)
+    if child_accessor == None:
+        print("skipped")
+        return topnchildren
+    child = json.loads(requests.get(api_base+child_accessor).text)
+    try:
+        icc = child['influentialCitationCount']
+    except KeyError:
+        print("not in s2 database")
+    topnchildren.append((child_accessor, icc, depth+1, parent))
+    topnchildren.sort(key=lambda tup: tup[1], reverse=True)
+    return topnchildren[:breadth]
+
 q = deque()
 max_depth = 1
 #doi = "arXiv:1703.06870"
-def find_qualified_children(access, depth=0, breadth=3, parent =-1):
-    global icc
+def find_qualified_children(access, breadth, depth=0, parent =-1):
+    #check for duplicates within current names. do not include them in the response
     print('depth =', depth)
     print(access)
     res = json.loads(requests.get(api_base+access).text)
@@ -83,37 +98,24 @@ def find_qualified_children(access, depth=0, breadth=3, parent =-1):
     if depth == max_depth:
         try:
             nextaccess, _, depth, parent = q.popleft()
-            find_qualified_children(nextaccess, depth, parent)
+            find_qualified_children(nextaccess, breadth, depth, parent)
         except:
             return
         return
-    topnchildren = [('',-1)]*breadth
-    global res_ref
-    try: 
-        res_ref = res['references']
-    except:
-        print(res)
-    for ref in res_ref:
-        if ref['isInfluential'] == True:
-            child_accessor = resolve_accessor(ref)
-            if child_accessor == None:
-                print("skipped")
-                continue
-            child = json.loads(requests.get(api_base+child_accessor).text)
-            try:
-                icc = child['influentialCitationCount']
-            except KeyError:
-                print("not in s2 database")
-            topnchildren.append((child_accessor, icc, depth+1, parent))
-            topnchildren.sort(key=lambda tup: tup[1], reverse=True)
-            topnchildren = topnchildren[:breadth]
+    res_ref = res['references']
+    topnchildren = [('',-1)]*len(res['references']) if (breadth == -1) else [('',-1)]*breadth
+    for ref in res_ref: 
+        if (breadth != -1) and (ref['isInfluential'] == True):
+            topnchildren = check_paper(ref, parent, depth, topnchildren, breadth)
+        elif (breadth == -1):
+            topnchildren = check_paper(ref, parent, depth, topnchildren, len(res['references'])) 
     print('topn =', topnchildren, 'q length = ', len(q))
     for each in topnchildren:
         if each[0] != '':
             print(f"appended {each[0]}")
             q.append(each)
     nextaccess, _, depth, parent = q.popleft() 
-    find_qualified_children(nextaccess, depth, parent)
+    find_qualified_children(nextaccess, breadth, depth, parent)
     if len(q) == 0:
         return
 
@@ -130,14 +132,14 @@ def get_data(accessor, breadth):
             'id':i,
             'label':'\n'.join(wordlist),
             'title':graphdict['num_citations'][i],
-            'size':graphdict['num_citations'][i]**.5,
+            'size':0.5*(math.log(graphdict['num_citations'][i])**2.7),
             'level':graphdict['depth'][i],
             'url':graphdict['url'][i],
             'abstract':graphdict['abstract'][i]
         })
         if i > 0:
             graph['edges'].append({
-                'from':graphdict['parent'][i]+1,
+                'from':graphdict['parent'][i],
                 'to':i
             })
     return graph

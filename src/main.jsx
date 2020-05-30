@@ -11,295 +11,8 @@ import { css } from "@emotion/core";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Button } from "semantic-ui-react";
 
-
-//const Sidebar = React.lazy(() => import('./sidebar'));
-//const VisNetwork = React.lazy(() => import('./network'));
-const nodes = new DataSet([
-    {
-      "id": 0,
-      "label": "DensePose: Dense Human Pose\nEstimation in the Wild",
-      "level": 0,
-      "size": 16.15549442140351,
-      "title": 261,
-      "url": "https://www.semanticscholar.org/paper/8c94385d45f5896e748e43171eeaaa259009faab"
-    },
-    {
-      "id": 1,
-      "label": "Microsoft COCO: Common Objects\nin Context",
-      "level": 1,
-      "size": 86.01744009211156,
-      "title": 7399,
-      "url": "https://www.semanticscholar.org/paper/71b7178df5d2b112d07e45038cb5637208659ff7"
-    },
-    {
-      "id": 2,
-      "label": "Mask R-CNN",
-      "level": 1,
-      "size": 47.81213235152768,
-      "title": 2286,
-      "url": "https://www.semanticscholar.org/paper/ea99a5535388196d0d44be5b4d7dd02029a43bb2"
-    },
-    {
-      "id": 3,
-      "label": "SMPL: a skinned multi-person\nlinear model",
-      "level": 1,
-      "size": 21.840329667841555,
-      "title": 477,
-      "url": "https://www.semanticscholar.org/paper/32d3048a4fe4becc7c4638afd05f2354b631cfca"
-    },
-    {
-      "id": 4,
-      "label": "ImageNet Classification with\nDeep Convolutional Neural\nNetworks",
-      "level": 2,
-      "size": 99.98499887483122,
-      "title": 9997
-    },
-    {
-      "id": 5,
-      "label": "ImageNet Classification with\nDeep Convolutional Neural\nNetworks",
-      "level": 2,
-      "size": 99.98499887483122,
-      "title": 9997
-    },
-    {
-      "id": 6,
-      "label": "ImageNet: A large-scale\nhierarchical image database",
-      "level": 2,
-      "size": 99.99499987499375,
-      "title": 9999
-    },
-    {
-      "id": 7,
-      "label": "[Et al].",
-      "level": 2,
-      "size": 99.9499874937461,
-      "title": 9990
-    },
-    {
-      "id": 8,
-      "label": "The Cityscapes Dataset for\nSemantic Urban Scene\nUnderstanding",
-      "level": 2,
-      "size": 48.79549159502341,
-      "title": 2381
-    },
-    {
-      "id": 9,
-      "label": "Fully Convolutional Networks\nfor Semantic Segmentation",
-      "level": 2,
-      "size": 47.93745925682754,
-      "title": 2298
-    },
-    {
-      "id": 10,
-      "label": "SCAPE: shape completion and\nanimation of people",
-      "level": 2,
-      "size": 28.337254630609507,
-      "title": 803
-    },
-    {
-      "id": 11,
-      "label": "Pose space deformation: a\nunified approach to shape\ninterpolation and skeleton-\ndriven deformation",
-      "level": 2,
-      "size": 24.55605831561735,
-      "title": 603
-    },
-    {
-      "id": 12,
-      "label": "Multi-weight enveloping:\nleast-squares approximation\ntechniques for skin animation",
-      "level": 2,
-      "size": 13.74772708486752,
-      "title": 189
-    },
-    {
-      "id": 13,
-      "label": "The PASCAL Visual Object\nClasses Challenge",
-      "level": 3,
-      "size": 49.64876634922564,
-      "title": 2465
-    },
-    {
-      "id": 14,
-      "label": "Principles of Categorization",
-      "level": 3,
-      "size": 50.0999001995014,
-      "title": 2510
-    },
-    {
-      "id": 15,
-      "label": "Labeling images with a\ncomputer game",
-      "level": 3,
-      "size": 42.720018726587654,
-      "title": 1825
-    },
-    {
-      "id": 16,
-      "label": "Faster R-CNN: Towards Real-\nTime Object Detection with\nRegion Proposal Networks",
-      "level": 3,
-      "size": 99.9499874937461,
-      "title": 9990
-    },
-    {
-      "id": 17,
-      "label": "Fully convolutional networks\nfor semantic segmentation",
-      "level": 3,
-      "size": 95.60334722173695,
-      "title": 9140
-    },
-    {
-      "id": 18,
-      "label": "Microsoft COCO: Common Objects\nin Context",
-      "level": 3,
-      "size": 84.31488599292535,
-      "title": 7109
-    },
-    {
-      "id": 19,
-      "label": "Very Deep Convolutional\nNetworks for Large-Scale Image\nRecognition",
-      "level": 3,
-      "size": 99.9499874937461,
-      "title": 9990
-    },
-    {
-      "id": 20,
-      "label": "ImageNet Classification with\nDeep Convolutional Neural\nNetworks",
-      "level": 3,
-      "size": 99.9699954986495,
-      "title": 9994
-    },
-    {
-      "id": 21,
-      "label": "ImageNet Classification with\nDeep Convolutional Neural\nNetworks",
-      "level": 3,
-      "size": 99.98499887483122,
-      "title": 9997
-    },
-    {
-      "id": 22,
-      "label": "Controlling Facial Expression\nand Body Move-ments in the\nComputer Generated Short `Tony\nde Peltrie",
-      "level": 3,
-      "size": 4.358898943540674,
-      "title": 19
-    }
-]);
-
-// create an array with edges
-const edges = new DataSet([
-  {
-      "from": -1,
-      "to": 0,
-      "id": "3dff610a-9613-4463-bfae-8760a283b8cf"
-    },
-    {
-      "from": 0,
-      "to": 1,
-      "id": "2cfb0e7e-4e28-4dea-bb88-68c61fe5a287"
-    },
-    {
-      "from": 0,
-      "to": 2,
-      "id": "ce00c718-2db2-4353-86ca-78c6db4b2297"
-    },
-    {
-      "from": 0,
-      "to": 3,
-      "id": "0434ee64-02e0-4ea2-a09d-912085b9b573"
-    },
-    {
-      "from": 1,
-      "to": 4,
-      "id": "3c4824a5-3768-438e-aba4-fe2f0ea24604"
-    },
-    {
-      "from": 1,
-      "to": 5,
-      "id": "64c075dc-c1b1-4a02-b008-8946a23b247c"
-    },
-    {
-      "from": 1,
-      "to": 6,
-      "id": "3a5656ae-a910-4b3d-8eb1-75e7f6c72a04"
-    },
-    {
-      "from": 2,
-      "to": 7,
-      "id": "e03c98af-cc36-41e1-9245-63b8c8f625f4"
-    },
-    {
-      "from": 2,
-      "to": 8,
-      "id": "d560e411-1ff0-4223-a6bc-3ebf89bd0e88"
-    },
-    {
-      "from": 2,
-      "to": 9,
-      "id": "1b309f49-819d-49a5-9538-f76082220668"
-    },
-    {
-      "from": 3,
-      "to": 10,
-      "id": "8677c446-a0fe-404b-b601-ff58f8f8165d"
-    },
-    {
-      "from": 3,
-      "to": 11,
-      "id": "105d27e2-d6d9-47e8-b159-2736c93b61a5"
-    },
-    {
-      "from": 3,
-      "to": 12,
-      "id": "7ed7c93a-dcb6-4587-b6d0-2a96d58743bf"
-    },
-    {
-      "from": 6,
-      "to": 13,
-      "id": "6e80815f-b62f-4c2f-84b3-15f68238c130"
-    },
-    {
-      "from": 6,
-      "to": 14,
-      "id": "fa5a330f-ce2c-4ee3-a302-ad1842284047"
-    },
-    {
-      "from": 6,
-      "to": 15,
-      "id": "770ef517-2459-46ba-8b35-1ac07113fbf3"
-    },
-    {
-      "from": 8,
-      "to": 16,
-      "id": "527e198c-7544-47db-bbc3-eb43b2c0f72c"
-    },
-    {
-      "from": 8,
-      "to": 17,
-      "id": "46bc34c7-f907-49b3-a66e-9f8a48b92a25"
-    },
-    {
-      "from": 8,
-      "to": 18,
-      "id": "e872fd7f-c572-42c8-9a9e-9546d6dc9514"
-    },
-    {
-      "from": 9,
-      "to": 19,
-      "id": "9a60a5e9-d34d-43dc-a5ce-6363630ecc63"
-    },
-    {
-      "from": 9,
-      "to": 20,
-      "id": "51cbe7c1-9b94-4e33-8195-c80ab00c1ea8"
-    },
-    {
-      "from": 9,
-      "to": 21,
-      "id": "89ea0752-96d0-4f5a-91ae-7bf060fe5e23"
-    },
-    {
-      "from": 11,
-      "to": 22,
-      "id": "5beee9ef-ba90-4568-9c8c-dcdeaaf2f1c0"
-    }
-]);
+const nodes = new DataSet()
+const edges = new DataSet()
 
 const data = {
   nodes: nodes,
@@ -368,21 +81,35 @@ class App extends React.Component {
     this.presets = this.presets.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleMessage = this.handleMessage.bind(this);
+    //this.updateAccessor = this.updateAccessor.bind(this);
+    this.nodemap = {};
+    this.edgemap = {};
     this.state = {
       nodeUpdate : [],
       edgeUpdate : [],
+      input: '',
+      searchbarVal: undefined,
       accessor: '',//"10.1109/CVPR.2018.00762",
       breadth: 3,
       selectednode: {},
-      growing: false
+      growing: false,
+      menuOpen: false
     };
     this.network = null;
     this.appRef = createRef();    
   }
 
-  handleChange = (e, data) => this.setState({breadth: data.value});
-  handleMessage = (e, data) => this.setState({accessor: data.value});
-
+/*updateAccessor = (clickedNode) => {
+    this.state.accessor = clickedNode;
+  }
+*/
+  handleChange = (e, data) => {
+    this.setState({breadth: data.value});
+  }
+  handleMessage = (e, data) => {
+    console.log('handleMessage')
+    this.setState({input: data.value});
+  }
   toggleHierarchy = () => {
     console.log(this.options)
     /*let hierarchy = this.options.layout.hierarchical['enabled'];
@@ -404,9 +131,13 @@ class App extends React.Component {
       console.log('clicked nodes:', clickedNodes);
       this.setState({selectednode: clickedNodes[0]});
       if (clickedNodes.length == 0){
-        this.setState({growing: false})
+        console.log('closed')
+        this.setState({menuOpen: false})
       } else {
-
+        console.log('opened')
+        this.setState({searchbarVal: ''})
+        this.setState({searchbarVal: undefined})
+        this.setState({menuOpen : true})
       }
     }.bind(this));
     this.options.layout.hierarchical['enabled'] = false;
@@ -418,19 +149,77 @@ class App extends React.Component {
     this.network = new Network(this.appRef.current, this.data, this.options);
     console.log('called')
     this.presets();
+    window.network = this
+  }
+
+  computeUpdates = (graph) => {
+    /*If any node is a duplicate, do not connect it again
+    Instead, add the edge from the source to the node already in the graph
+    if both the */
+    //If node is not a duplicate, add it to the graph and add the connect
+    var nodesToAdd = [] //list of obj
+    var edgemapToAdd = {} // {0:[1,2,3]}
+    var edgesToAdd = [] // list of obj
+    for (var i = 0; i < graph.nodes.length; i++){
+      if (!(graph.nodes[i]['label'] in this.nodemap)){ // if node is not a duplicate, add
+        graph.nodes[i]['id'] = i + this.nodes.length
+        if ((i > 0) && (!nodemap[graph.nodes[0]['label']] == false)){
+          graph.nodes[i]['level'] = graph.nodes[]['level']+1
+        }
+        nodesToAdd.push(graph.nodes[i])
+      }
+    }
+    for (var i = 0; i < graph.edges.length; i++){ //if edge not already in edgemap, add edge to net and edgemap
+      if (this.state.growing == true){
+        //only if we're growing leaves on the tree, look in the nodemap
+        graph.edges[i]['from'] = this.nodemap[graph.nodes[0]['label']]
+      }
+      graph.edges[i]['to'] += this.nodes.length
+      if ((!this.edgemap[graph.edges[i]['from']]) || 
+        (!this.edgemap[graph.edges[i]['from']].includes(graph.edges[i]['to']))){
+        //correct indices to what they should be on write
+        //look at the first node in the res graph to find its name, then find its index to which
+        //we should attach the edges
+        edgesToAdd.push(graph.edges[i])
+        //because of the above line, we have to directly change the properties of each edge object
+        if (!edgemapToAdd[graph.edges[i]['from']]){
+          edgemapToAdd[graph.edges[i]['from']] = [graph.edges[i]['to']]
+        } else {
+          edgemapToAdd[graph.edges[i]['from']].push(graph.edges[i]['to'])
+        }
+      }
+    }
+    console.log('edgesToAdd', edgesToAdd)
+    for (var i = 0; i < nodesToAdd.length; i++){
+      this.nodemap[nodesToAdd[i]['label']] = i + this.nodes.length
+    }
+
+    for (var key in edgemapToAdd){
+      if (!(this.edgemap[key])){
+        this.edgemap[key] = edgemapToAdd[key]
+      } else {
+        this.edgemap[key] = this.edgemap[key].concat(edgemapToAdd[key])
+      }
+    }
+    console.log(this.nodemap)
+    console.log(this.edgemap)
+    this.setState({nodeUpdate: nodesToAdd})
+    this.setState({edgeUpdate: edgesToAdd})
+    return
   }
 
   fetchGraph = async () => {
-    if (typeof this.state.selectednode !== 'undefined'){
-      if ((Object.keys(this.state.selectednode).length > 0 ||
-          this.state.selectednode.hasOwnProperty('url')) && 
-          (this.state.accessor == '')){
-        let accessor = this.state.selectednode['url'].split('/')
-        this.state.accessor = accessor[accessor.length-1]
-        console.log("accessor!", this.state.accessor)
-        this.state.growing = true
-      }
+    if ((this.state.input == '') && (this.state.selectednode.hasOwnProperty('url'))){
+      let accessor = this.state.selectednode['url'].split('/')
+      this.state.accessor = accessor[accessor.length-1]
+      this.state.growing = true
+    } else {
+      this.state.accessor = this.state.input
+      this.state.growing = false
+      this.state.nodemap = {}
+      this.state.edgemap = {}
     }
+    console.log("accessor!", this.state.accessor)
     let toastId = toast(<div style = {{"textAlign": "center"}}><p>Looking in {this.state.accessor}...</p>
     <ClipLoader
       size = {15}
@@ -453,12 +242,12 @@ class App extends React.Component {
     })
     } else {
       console.log(graph)
+      this.computeUpdates(graph)
       /*
-      let updates = computeUpdates(graph)
       this.state.nodeUpdate = updates[0]
-      this.state.edgeUpdate = updates[1]*/
+      this.state.edgeUpdate = updates[1]
       this.setState({nodeUpdate: graph.nodes})
-      this.setState({edgeUpdate: graph.edges})
+      this.setState({edgeUpdate: graph.edges})*/
       toast.dismiss(toastId);
       toast.success(<div style = {{"textAlign": "center"}}>
         <p>Added {Object.keys(this.state.nodeUpdate).length} nodes to the graph</p>
@@ -473,19 +262,12 @@ class App extends React.Component {
       })
     }    
   }
-/*
-  computeUpdates = (graph) => {
-    this.setState({nodeUpdate: graph.nodes})
-    this.setState({edgeUpdate: graph.edges})
-    return [nodeUpdate, edgeUpdate]
-  }
-*/
+
   addnode = async () => {
-    //temporarily build entire graph 
     await this.fetchGraph();
     if (Object.keys(this.state.nodeUpdate).length > 0){
       if (this.state.growing == false){
-        this.edges.clear()  
+        this.edges.clear() 
         this.nodes.clear()
       }
       console.log(this.state.growing)
@@ -495,6 +277,7 @@ class App extends React.Component {
         this.toggleHierarchy()
       }
     }
+    this.state.input = ''
   }
 
 
@@ -506,6 +289,7 @@ class App extends React.Component {
           addnode = {this.addnode} 
           toggleHierarchy = {this.toggleHierarchy}
           selectednode = {this.state.selectednode}
+          menuOpen = {this.state.menuOpen}
         />
         <div id = "network" style = {{height:"100vh"}} ref={this.appRef}/>
         <div id = "searchbar" style = {{position: "absolute", top:"7.1vh", 
@@ -514,6 +298,7 @@ class App extends React.Component {
             handleChange = {this.handleChange}
             handleMessage = {this.handleMessage}
             addnode = {this.addnode}
+            searchbarVal = {this.state.searchbarVal}
             selectednode = {this.state.selectednode}
           />
         </div>
