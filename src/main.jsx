@@ -407,6 +407,7 @@ class App extends React.Component {
       }
     }
     for (var i = 0; i < graph.edges.length; i++){ //if edge not already in edgemap, add edge to net and edgemap
+      let internaldest = graph.edges[i]['to']
       if (this.state.growing == true){
         //only if we're growing leaves on the tree, look in the nodemap
         graph.edges[i]['from'] = this.nodemap[graph.nodes[0]['label']]
@@ -414,11 +415,16 @@ class App extends React.Component {
       } else {
         graph.edges[i]['to'] += this.nodes.length
       }
+      //correct indices to what they should be on write
+      //look at the first node in the res graph to find its name, then find its index to which
+      //we should attach the edges
+      //if the dest node already exists in the graph, point towards that instead
+      if (!!this.nodemap[graph.nodes[internaldest]['label']]){
+        console.log('repeat!')
+        graph.edges[i]['to'] = this.nodemap[graph.nodes[internaldest]['label']]
+      }
       if ((!this.edgemap[graph.edges[i]['from']]) || 
         (!this.edgemap[graph.edges[i]['from']].includes(graph.edges[i]['to']))){
-        //correct indices to what they should be on write
-        //look at the first node in the res graph to find its name, then find its index to which
-        //we should attach the edges
         edgesToAdd.push(graph.edges[i])
         //because of the above line, we have to directly change the properties of each edge object
         if (!edgemapToAdd[graph.edges[i]['from']]){
