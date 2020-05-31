@@ -7,16 +7,9 @@ import textwrap
 import math
 from collections import deque
 
-global q, breadth, graphdict, refdict
-
 api_base = "https://api.semanticscholar.org/v1/paper/"
-refdict = {"arxivId":[],"authors":[],"citationVelocity":[],"num_citations":[], "abstract":[],
-           "corpusId":[],"doi":[],"fieldsOfStudy":[], "influentialCitationCount":[],
-           "is_open_access":[], "is_publisher_licensed":[],"paperId":[],"num_references":[],
-           "title":[],"topics":[],"url":[],"venue":[],"year":[], "parent": [], "depth":[]}
-graphdict = copy.deepcopy(refdict)
 
-def add_record(res, parent, depth):
+def add_record(res, parent, depth, graphdict):
     for each in list(graphdict.keys()):
         if each == 'num_citations':
             try:
@@ -54,7 +47,7 @@ def add_record(res, parent, depth):
     graphdict['venue'].append(res['venue'])
     graphdict['year'].append(res['year'])
     graphdict['parent'].append(parent)"""
-    return len(graphdict['parent'])-1
+    return len(graphdict['parent'])-1, graphdict
 
 def resolve_accessor(res):
     if res['doi'] == None:        
@@ -86,22 +79,21 @@ def check_paper(ref, parent, depth, topnchildren, breadth):
     topnchildren.sort(key=lambda tup: tup[1], reverse=True)
     return topnchildren[:breadth]
 
-q = deque()
-max_depth = 1
+#max_depth = 1
 #doi = "arXiv:1703.06870"
-def find_qualified_children(access, breadth, depth=0, parent =-1):
+def find_qualified_children(q, graphdict, access, breadth, depth=0, parent =-1):
     #check for duplicates within current names. do not include them in the response
     print('depth =', depth)
     print(access)
     res = json.loads(requests.get(api_base+access).text)
-    parent = add_record(res, parent, depth)
-    if depth == max_depth:
+    parent, graphdict = add_record(res, parent, depth, graphdict)
+    if depth == 1:
         try:
             nextaccess, _, depth, parent = q.popleft()
-            find_qualified_children(nextaccess, breadth, depth, parent)
+            find_qualified_children(q, graphdict, nextaccess, breadth, depth, parent)
         except:
-            return
-        return
+            return graphdict
+        return graphdict
     res_ref = res['references']
     topnchildren = [('',-1)]*len(res['references']) if (breadth == -1) else [('',-1)]*breadth
     for ref in res_ref: 
@@ -115,14 +107,17 @@ def find_qualified_children(access, breadth, depth=0, parent =-1):
             print(f"appended {each[0]}")
             q.append(each)
     nextaccess, _, depth, parent = q.popleft() 
-    find_qualified_children(nextaccess, breadth, depth, parent)
+    find_qualified_children(q, graphdict, nextaccess, breadth, depth, parent)
     if len(q) == 0:
-        return
+        return graphdict
 
 def get_data(accessor, breadth): 
-    global graphdict
-    graphdict = copy.deepcopy(refdict)
-    find_qualified_children(accessor, breadth = breadth)
+    graphdict = {"arxivId":[],"authors":[],"citationVelocity":[],"num_citations":[], "abstract":[],
+           "corpusId":[],"doi":[],"fieldsOfStudy":[], "influentialCitationCount":[],
+           "is_open_access":[], "is_publisher_licensed":[],"paperId":[],"num_references":[],
+           "title":[],"topics":[],"url":[],"venue":[],"year":[], "parent": [], "depth":[]}
+    q = deque()
+    graphdict = find_qualified_children(q, graphdict, accessor, breadth = breadth)
     pd.DataFrame.from_dict(graphdict).to_csv("graph.csv", index = False)
     graph = {'nodes':[], 'edges':[]}
     wrapper = textwrap.TextWrapper(width=30)
@@ -143,4 +138,3 @@ def get_data(accessor, breadth):
                 'to':i
             })
     return graph
-#find_qualified_children("arXiv:1703.06870")

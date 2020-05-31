@@ -8,9 +8,10 @@ app = Flask(__name__, static_folder='static')
 def buildgraph(accessor, breadth):
     try:
         graph = get_data(accessor, breadth)
-        return (jsonify(graph))
+        return (jsonify(graph)), graph
     except:
-        return jsonify({'error': 'Paper not found'})        
+        graph = None
+        return jsonify({'error': 'Paper not found'}), graph   
 
 @app.route('/')
 def main():
@@ -21,8 +22,8 @@ def getgraph():
     accessor = request.args.get('accessor')
     breadth = int(request.args.get('breadth'))
     print(accessor, breadth)
-    jsongraph = buildgraph(accessor, breadth)
-    print(jsongraph)
+    jsongraph, graph = buildgraph(accessor, breadth)
+    print(graph)
     return jsongraph
 
 

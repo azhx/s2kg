@@ -15,9 +15,8 @@ class Sidebar extends React.Component{
     var isMenuOpen = function(state) {
       console.log('state!',  state.isOpen)
     };
-    
     return (
-        <Menu customCrossIcon={false} onStateChange={isMenuOpen} isOpen={this.props.menuOpen} noOverlay width={"50vw"}>
+        <Menu onStateChange={isMenuOpen} isOpen={this.props.menuOpen} noOverlay width={"50vw"}>
           <h1>Abstract</h1>
           <p>{abstract}</p>
         </Menu>
