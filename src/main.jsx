@@ -520,6 +520,7 @@ class App extends React.Component {
       color = {"#000000"}/></div>);
     let res = await this.enqueue(()=>
       fetch('/buildgraph?accessor='+ this.state.accessor + '&breadth='+ this.state.breadth))
+    await console.log(res)
     let graph = await res.json()
     console.log(graph)
     if (graph.hasOwnProperty('error')){
