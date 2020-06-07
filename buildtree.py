@@ -1,7 +1,6 @@
 import requests
 import pandas as pd
 import json
-import numpy as np
 import copy
 import textwrap
 import math
