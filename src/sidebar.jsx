@@ -16,9 +16,9 @@ class Sidebar extends React.Component{
       console.log('state!',  state.isOpen)
     };
     return (
-        <Menu onStateChange={isMenuOpen} isOpen={this.props.menuOpen} noOverlay width={"50vw"}>
-          <h1>Abstract</h1>
-          <p>{abstract}</p>
+        <Menu onStateChange={isMenuOpen} isOpen={this.props.menuOpen} noOverlay width={"30vw"}>
+          <h2>Abstract</h2>
+          <p style = {{fontSize: 'small'}}>{abstract}</p>
         </Menu>
       );
     }

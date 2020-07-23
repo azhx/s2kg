@@ -116,21 +116,33 @@ def get_data(accessor, breadth):
            "is_open_access":[], "is_publisher_licensed":[],"paperId":[],"num_references":[],
            "title":[],"topics":[],"url":[],"venue":[],"year":[], "parent": [], "depth":[]}
     q = deque()
+    print(graphdict)
     graphdict = find_qualified_children(q, graphdict, accessor, breadth = breadth)
     pd.DataFrame.from_dict(graphdict).to_csv("graph.csv", index = False)
     graph = {'nodes':[], 'edges':[]}
     wrapper = textwrap.TextWrapper(width=30)
     for i, v in enumerate(graphdict['title']):
         wordlist = wrapper.wrap(text=v)
+        velocity = graphdict['citationVelocity'][i]
         graph['nodes'].append({ 
             'id':i,
             'label':'\n'.join(wordlist),
+            'articletitle': graphdict['title'],
+            'authors': graphdict['authors'],
             'title':graphdict['num_citations'][i],
-            'size':0.5*(math.log(graphdict['num_citations'][i])**2.7),
+            'velocity': velocity,
+            'size':10*(math.log(graphdict['num_citations'][i])),
             'level':graphdict['depth'][i],
             'url':graphdict['url'][i],
+            'color': { 'background': f'rgba({75-(velocity/10)}, {78-(velocity/10)}, {91-(velocity/10)}, 1)',
+                        'border': f'rgba(25, 28, 41, 1)',
+                        'highlight': {
+                            'border': f'rgba(25, 28, 41, 1)',
+                            'background': 'rgba(155, 158, 171, 1)'
+                        }},
             'abstract':graphdict['abstract'][i]
         })
+        print(graph['nodes'])
         if i > 0:
             graph['edges'].append({
                 'from':graphdict['parent'][i],
