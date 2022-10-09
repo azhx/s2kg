@@ -4,6 +4,7 @@ import json
 import numpy as np
 import copy
 import textwrap
+import time
 from collections import deque
 
 global q, breadth, graphdict, refdict
@@ -15,12 +16,6 @@ refdict = {"arxivId":[],"authors":[],"citationVelocity":[],"num_citations":[],
            "title":[],"topics":[],"url":[],"venue":[],"year":[], "parent": []}
 graphdict = copy.deepcopy(refdict)
 
-def catch_excpetions(key, res):
-    try:
-        graphdict[key].append(res['arxivId'])
-    except:
-        print(key + ' does not exist')
-        graphdict[key].append([''])
 
 def add_record(res, parent):
     for each in list(graphdict.keys()):
@@ -61,62 +56,92 @@ def add_record(res, parent):
     return len(graphdict['parent'])-1
 
 def resolve_accessor(res):
-    if res['arxivId'] == None:
-        if res['paperId'] == None:
-            if res['doi'] == None:
+    if res['doi'] == None:
+        if res['arxivId'] == None:
+            if res['paperId'] == None:
                 return(None)
             else:
-                return(res['doi'])
+                return(res['paperId'])
         else:
-            return(res['paperId'])
+            return('arxiv:' + res['arxivId'])
     else:
-        return('arxiv:' + res['arxivId'])
+        return(res['doi'])
 
 q = deque()
 breadth = 3
 max_depth = 6
+call_count = 0
 doi = "arXiv:1703.06870"
 def find_qualified_children(access, depth=0, parent =-1):
-    global icc
+    global icc, res, call_count, max_depth
+    call_count +=1
+    if (call_count %10 == 0):
+        print('sleeping for 10 seconds')
+        time.sleep(10)
     print('depth =', depth)
+    print('looking in ' + access)    
     res = json.loads(requests.get(api_base+access).text)
+    try:
+        assert len(res)>1
+    except Exception as e:
+        print(res.keys())
+        print(e)
     parent = add_record(res, parent)
     if depth == max_depth:
         try:
             nextaccess, _, depth, parent = q.popleft()
             find_qualified_children(nextaccess, depth, parent)
-        except:
             return
-        return
+        except Exception as e:
+            print(e)
+            return
     topnchildren = [('',-1)]*breadth
-    for ref in res['references']:
-        if ref['isInfluential'] == True:
-            child_accessor = resolve_accessor(ref)
-            if child_accessor == None:
-                print("skipped")
-                continue
-            child = json.loads(requests.get(api_base+child_accessor).text)
-            try:
-                icc = child['influentialCitationCount']
-            except KeyError:
-                print("not in s2 database")
-            topnchildren.append((child_accessor, icc, depth+1, parent))
-            topnchildren.sort(key=lambda tup: tup[1], reverse=True)
-            topnchildren = topnchildren[:breadth]
-    print('topn =', topnchildren, 'q length = ', len(q))
-    for each in topnchildren:
-        if each[0] != '':
-            print(f"appended {each[0]}")
-            q.append(each)
-    nextaccess, _, depth, parent = q.popleft() 
-    find_qualified_children(nextaccess, depth, parent)
-    if len(q) == 0:
-        return
+    try:
+        res_refs = res['references']
+        for ref in res_refs:
+            if ref['isInfluential'] == True:
+                child_accessor = resolve_accessor(ref)
+                if child_accessor == None:
+                    print("skipped")
+                    continue
+                child = json.loads(requests.get(api_base+child_accessor).text)
+                try:
+                    icc = child['influentialCitationCount']
+                except Exception as e:
+                    print(e)
+                    print("not in s2 database")
+                    continue
+                topnchildren.append((child_accessor, icc, depth+1, parent))
+                topnchildren.sort(key=lambda tup: tup[1], reverse=True)
+                topnchildren = topnchildren[:breadth]
+        print('topn =', topnchildren, 'q length = ', len(q))
+        for each in topnchildren:
+            if each[0] != '':
+                print(f"appended {each[0]}")
+                q.append(each)
+        nextaccess, _, depth, parent = q.popleft() 
+        find_qualified_children(nextaccess, depth, parent)
+        if len(q) == 0:
+            return
+    except Exception as e:
+        print(e)
+        try:
+            nextaccess, _, depth, parent = q.popleft()
+            find_qualified_children(nextaccess, depth, parent)
+            print('res_not_found')
+            return
+        except Exception as e:
+            print(e)
+            print('exception_to_the_exception')
+            print(res.keys())
+            return 
+
 
 def get_data(accessor):
     global graphdict
     graphdict = copy.deepcopy(refdict)
     find_qualified_children(accessor)
+    print(q)
     pd.DataFrame.from_dict(graphdict).to_csv("graph.csv", index = False)
     graph = {'nodes':[], 'edges':[]}
     print(graphdict, refdict)
