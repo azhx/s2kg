@@ -5,9 +5,13 @@ from flask import Flask, request, render_template, jsonify
 
 app = Flask(__name__, static_folder='static')
 
-def buildgraph(accessor):
-    graph = get_data(accessor)
-    return (jsonify(graph))
+def buildgraph(accessor, breadth):
+    try:
+        graph = get_data(accessor, breadth)
+        return (jsonify(graph)), graph
+    except:
+        graph = None
+        return jsonify({'error': 'Paper not found'}), graph   
 
 @app.route('/')
 def main():
@@ -16,9 +20,13 @@ def main():
 @app.route('/buildgraph', methods=['GET'])
 def getgraph():
     accessor = request.args.get('accessor')
-    print(accessor)
-    return buildgraph(accessor)
+    breadth = int(request.args.get('breadth'))
+    print(accessor, breadth)
+    jsongraph, graph = buildgraph(accessor, breadth)
+    print(graph)
+    return jsongraph
 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 8080)), debug=True)
+# host='0.0.0.0', port=int(os.getenv('PORT', 8080)), debug=True

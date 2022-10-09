@@ -1,23 +1,14 @@
 import requests
 import pandas as pd
 import json
-import numpy as np
 import copy
 import textwrap
 import time
 from collections import deque
 
-global q, breadth, graphdict, refdict
-
 api_base = "https://api.semanticscholar.org/v1/paper/"
-refdict = {"arxivId":[],"authors":[],"citationVelocity":[],"num_citations":[],
-           "corpusId":[],"doi":[],"fieldsOfStudy":[], "influentialCitationCount":[],
-           "is_open_access":[], "is_publisher_licensed":[],"paperId":[],"num_references":[],
-           "title":[],"topics":[],"url":[],"venue":[],"year":[], "parent": []}
-graphdict = copy.deepcopy(refdict)
 
-
-def add_record(res, parent):
+def add_record(res, parent, depth, graphdict):
     for each in list(graphdict.keys()):
         if each == 'num_citations':
             try:
@@ -31,6 +22,8 @@ def add_record(res, parent):
                 graphdict[each].append(None)
         elif each == 'parent':
             graphdict[each].append(parent)
+        elif each == 'depth':
+            graphdict[each].append(depth)
         else:
             try:
                 graphdict[each].append(res[each])
@@ -53,110 +46,106 @@ def add_record(res, parent):
     graphdict['venue'].append(res['venue'])
     graphdict['year'].append(res['year'])
     graphdict['parent'].append(parent)"""
-    return len(graphdict['parent'])-1
+    return len(graphdict['parent'])-1, graphdict
 
 def resolve_accessor(res):
-    if res['doi'] == None:
-        if res['arxivId'] == None:
-            if res['paperId'] == None:
-                return(None)
+    if res['doi'] == None:        
+        #if res['corpusId'] == None:
+            if res['arxivId'] == None:
+                if res['paperId'] == None:
+                    return(None)
+                else:
+                    return(res['paperId'])
             else:
-                return(res['paperId'])
-        else:
-            return('arxiv:' + res['arxivId'])
+                return('arxiv:' + res['arxivId'])
+        #else:
+        #    return(res['corpusId'])
     else:
         return(res['doi'])
 
-q = deque()
-breadth = 3
-max_depth = 6
-call_count = 0
-doi = "arXiv:1703.06870"
-def find_qualified_children(access, depth=0, parent =-1):
-    global icc, res, call_count, max_depth
-    call_count +=1
-    if (call_count %10 == 0):
-        print('sleeping for 10 seconds')
-        time.sleep(10)
+def check_paper(ref, parent, depth, topnchildren, breadth):
+    icc = 0
+    child_accessor = resolve_accessor(ref)
+    if child_accessor == None:
+        print("skipped")
+        return topnchildren
+    child = json.loads(requests.get(api_base+child_accessor).text)
+    try:
+        icc = child['influentialCitationCount']
+    except KeyError:
+        print("not in s2 database")
+    topnchildren.append((child_accessor, icc, depth+1, parent))
+    topnchildren.sort(key=lambda tup: tup[1], reverse=True)
+    return topnchildren[:breadth]
+
+#max_depth = 1
+#doi = "arXiv:1703.06870"
+def find_qualified_children(q, graphdict, access, breadth, depth=0, parent =-1):
+    #check for duplicates within current names. do not include them in the response
     print('depth =', depth)
-    print('looking in ' + access)    
+    print(access)
     res = json.loads(requests.get(api_base+access).text)
-    try:
-        assert len(res)>1
-    except Exception as e:
-        print(res.keys())
-        print(e)
-    parent = add_record(res, parent)
-    if depth == max_depth:
+    parent, graphdict = add_record(res, parent, depth, graphdict)
+    if depth == 1:
         try:
             nextaccess, _, depth, parent = q.popleft()
-            find_qualified_children(nextaccess, depth, parent)
-            return
-        except Exception as e:
-            print(e)
-            return
-    topnchildren = [('',-1)]*breadth
-    try:
-        res_refs = res['references']
-        for ref in res_refs:
-            if ref['isInfluential'] == True:
-                child_accessor = resolve_accessor(ref)
-                if child_accessor == None:
-                    print("skipped")
-                    continue
-                child = json.loads(requests.get(api_base+child_accessor).text)
-                try:
-                    icc = child['influentialCitationCount']
-                except Exception as e:
-                    print(e)
-                    print("not in s2 database")
-                    continue
-                topnchildren.append((child_accessor, icc, depth+1, parent))
-                topnchildren.sort(key=lambda tup: tup[1], reverse=True)
-                topnchildren = topnchildren[:breadth]
-        print('topn =', topnchildren, 'q length = ', len(q))
-        for each in topnchildren:
-            if each[0] != '':
-                print(f"appended {each[0]}")
-                q.append(each)
-        nextaccess, _, depth, parent = q.popleft() 
-        find_qualified_children(nextaccess, depth, parent)
-        if len(q) == 0:
-            return
-    except Exception as e:
-        print(e)
-        try:
-            nextaccess, _, depth, parent = q.popleft()
-            find_qualified_children(nextaccess, depth, parent)
-            print('res_not_found')
-            return
-        except Exception as e:
-            print(e)
-            print('exception_to_the_exception')
-            print(res.keys())
-            return 
+            find_qualified_children(q, graphdict, nextaccess, breadth, depth, parent)
+        except:
+            return graphdict
+        return graphdict
+    res_ref = res['references']
+    topnchildren = [('',-1)]*len(res['references']) if (breadth == -1) else [('',-1)]*breadth
+    for ref in res_ref: 
+        if (breadth != -1) and (ref['isInfluential'] == True):
+            topnchildren = check_paper(ref, parent, depth, topnchildren, breadth)
+        elif (breadth == -1):
+            topnchildren = check_paper(ref, parent, depth, topnchildren, len(res['references'])) 
+    print('topn =', topnchildren, 'q length = ', len(q))
+    for each in topnchildren:
+        if each[0] != '':
+            print(f"appended {each[0]}")
+            q.append(each)
+    nextaccess, _, depth, parent = q.popleft() 
+    find_qualified_children(q, graphdict, nextaccess, breadth, depth, parent)
+    if len(q) == 0:
+        return graphdict
 
-
-def get_data(accessor):
-    global graphdict
-    graphdict = copy.deepcopy(refdict)
-    find_qualified_children(accessor)
-    print(q)
+def get_data(accessor, breadth): 
+    graphdict = {"arxivId":[],"authors":[],"citationVelocity":[],"num_citations":[], "abstract":[],
+           "corpusId":[],"doi":[],"fieldsOfStudy":[], "influentialCitationCount":[],
+           "is_open_access":[], "is_publisher_licensed":[],"paperId":[],"num_references":[],
+           "title":[],"topics":[],"url":[],"venue":[],"year":[], "parent": [], "depth":[]}
+    q = deque()
+    print(graphdict)
+    graphdict = find_qualified_children(q, graphdict, accessor, breadth = breadth)
     pd.DataFrame.from_dict(graphdict).to_csv("graph.csv", index = False)
     graph = {'nodes':[], 'edges':[]}
-    print(graphdict, refdict)
-    wrapper = textwrap.TextWrapper(width=30) 
+    wrapper = textwrap.TextWrapper(width=30)
     for i, v in enumerate(graphdict['title']):
         wordlist = wrapper.wrap(text=v)
+        velocity = graphdict['citationVelocity'][i]
         graph['nodes'].append({ 
             'id':i,
             'label':'\n'.join(wordlist),
+            'articletitle': graphdict['title'],
+            'authors': graphdict['authors'],
             'title':graphdict['num_citations'][i],
-            'size':graphdict['num_citations'][i]/100
+            'velocity': velocity,
+            'size':10*(math.log(graphdict['num_citations'][i])),
+            'level':graphdict['depth'][i],
+            'url':graphdict['url'][i],
+            'color': { 'background': f'rgba({75-(velocity/10)}, {78-(velocity/10)}, {91-(velocity/10)}, 1)',
+                        'border': f'rgba(25, 28, 41, 1)',
+                        'highlight': {
+                            'border': f'rgba(25, 28, 41, 1)',
+                            'background': 'rgba(155, 158, 171, 1)'
+                        }},
+            'abstract':graphdict['abstract'][i]
         })
-        graph['edges'].append({
-            'from':graphdict['parent'][i],
-            'to':i
-        })
+        print(graph['nodes'])
+        if i > 0:
+            graph['edges'].append({
+                'from':graphdict['parent'][i],
+                'to':i
+            })
     return graph
-#find_qualified_children("arXiv:1703.06870")
